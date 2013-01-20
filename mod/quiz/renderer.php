@@ -449,6 +449,9 @@ class mod_quiz_renderer extends plugin_renderer_base {
                 'value' => $nextpage));
         $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'timeup',
                 'value' => '0', 'id' => 'timeup'));
+        // IDW 20_01_2013 Record when the 'next' button was pressed
+        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'timenext',
+        		'value' => '0', 'id' => 'timenext'));
         $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey',
                 'value' => sesskey()));
         $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'scrollpos',
@@ -606,6 +609,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
             'attempt' => $attemptobj->get_attemptid(),
             'finishattempt' => 1,
             'timeup' => 0,
+        	'timenext' => 0,
             'slots' => '',
             'sesskey' => sesskey(),
         );
