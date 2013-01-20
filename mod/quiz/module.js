@@ -54,13 +54,31 @@ M.mod_quiz.timer = {
     // so we can cancel.
     timeoutid: null,
 
-    /**
+   /**
      * @param Y the YUI object
      * @param timeleft, the time remaining, in seconds.
+     * @param timeout, question timeout, in seconds.
      */
-    init: function(Y, timeleft) {
+    init: function(Y, timeleft, timeout) {
         M.mod_quiz.timer.Y = Y;
         M.mod_quiz.timer.endtime = new Date().getTime() + timeleft*1000;
+        M.mod_quiz.timer.questiontimeout = timeout;
+        
+        // IDW 04/10/2012 - determine if an extra delay has been specified in the question text...
+        var divEl = document.getElementById('delay_div')
+        if(divEl != null) {
+        	// what is the delay?
+        	strDelay = divEl.innerText;
+        	
+        	M.mod_quiz.timer.questiontimeout = Number(timeout) + Number(strDelay); 
+
+        	//alert("delay_div set!");
+        }
+        //alert("timeout is " + M.mod_quiz.timer.questiontimeout);
+        secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime())/1000);
+        M.mod_quiz.timer.questiontimeouttime = secondsleft - M.mod_quiz.timer.questiontimeout;
+	//alert("seconds left is " + secondsleft + ", question will timeout with "+ M.mod_quiz.timer.questiontimeouttime + " seconds left");
+        
         M.mod_quiz.timer.update();
         Y.one('#quiz-timer').setStyle('display', 'block');
     },
@@ -90,6 +108,35 @@ M.mod_quiz.timer = {
         var Y = M.mod_quiz.timer.Y;
         var secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime())/1000);
 
+ 	// 20120615 IDW test - if question timeout is set then nudge on to the next question if necessary
+ 	
+ 	/*
+        if(M.mod_quiz.timer.questiontimeout > 0) {
+	        if ( (secondsleft > 0) && ((secondsleft % M.mod_quiz.timer.questiontimeout) == 0) )
+	        	//alert("skip to next question");
+	        	var btn = document.getElementById('next');
+	        	if(btn != null) {
+	        		btn.click();
+	        	}
+	        }
+        }
+        
+        IDW 05/10/12 Replace this with...
+        */
+        if(M.mod_quiz.timer.questiontimeout > 0) {
+        
+	        //alert("seconds left is " + secondsleft + ", question will timeout with "+ M.mod_quiz.timer.questiontimeouttime + " seconds left");
+        	if ( (secondsleft > 0) && (M.mod_quiz.timer.questiontimeouttime > secondsleft) ) {
+        		
+        
+        		//alert("skip to next question");
+	        	var btn = document.getElementById('next');
+	        	if(btn != null) {
+	        		btn.click();
+	        	}
+	        }
+	}
+        
         // If time has expired, Set the hidden form field that says time has expired.
         if (secondsleft < 0) {
             M.mod_quiz.timer.stop(null);
