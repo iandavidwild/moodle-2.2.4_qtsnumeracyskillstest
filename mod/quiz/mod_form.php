@@ -81,12 +81,19 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->addElement('date_time_selector', 'timeclose', get_string('quizclose', 'quiz'),
                 array('optional' => true, 'step' => 1));
 
-        // Time limit.
+         // Quiz time limit.
         $mform->addElement('duration', 'timelimit', get_string('timelimit', 'quiz'),
                 array('optional' => true));
         $mform->addHelpButton('timelimit', 'timelimit', 'quiz');
         $mform->setAdvanced('timelimit', $quizconfig->timelimit_adv);
         $mform->setDefault('timelimit', $quizconfig->timelimit);
+
+        // Question time limit.
+        $mform->addElement('duration', 'questiontimelimit', get_string('questiontimelimit', 'quiz'),
+        array('optional' => true));
+        $mform->addHelpButton('questiontimelimit', 'questiontimelimit', 'quiz');
+        $mform->setAdvanced('questiontimelimit', $quizconfig->questiontimelimit_adv);
+        $mform->setDefault('questiontimelimit', $quizconfig->questiontimelimit);
 
         // Number of attempts.
         $attemptoptions = array('0' => get_string('unlimited'));
