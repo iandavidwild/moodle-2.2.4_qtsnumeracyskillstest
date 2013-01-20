@@ -397,9 +397,10 @@ class quiz_access_manager {
      *
      * @param object $attempt the data from the relevant quiz_attempts row.
      * @param int $timenow the time to consider as 'now'.
+     * @param int $questiontimeout timeout for each question.
      * @param mod_quiz_renderer $output the quiz renderer.
      */
-    public function show_attempt_timer_if_needed($attempt, $timenow, $output) {
+    public function show_attempt_timer_if_needed($attempt, $timenow, $questiontimeout, $output) {
 
         $timeleft = false;
         foreach ($this->rules as $rule) {
@@ -413,7 +414,7 @@ class quiz_access_manager {
             // Make sure the timer starts just above zero. If $timeleft was <= 0, then
             // this will just have the effect of causing the quiz to be submitted immediately.
             $timerstartvalue = max($timeleft, 1);
-            $output->initialise_timer($timerstartvalue);
+            $output->initialise_timer($timerstartvalue, $questiontimeout);
         }
     }
 
