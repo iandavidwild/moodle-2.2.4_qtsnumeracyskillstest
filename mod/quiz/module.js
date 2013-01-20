@@ -133,7 +133,8 @@ M.mod_quiz.timer = {
 	        	var btn = document.getElementById('next');
 	        	if(btn != null) {
 	                var input = Y.one('input[name=timenext]');
-	                input.set('value', new Date().getTime());
+	                epoch_time = (new Date().getTime())/1000;
+	                input.set('value', epoch_time);
 	        		btn.click();
 	        	}
 	        }
