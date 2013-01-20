@@ -436,8 +436,8 @@ class mod_quiz_renderer extends plugin_renderer_base {
         }
 
         $output .= html_writer::start_tag('div', array('class' => 'submitbtns'));
-        $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next',
-                'value' => get_string('next')));
+        // IDW 29/09/12 the next button needs to have id='next' so question timeout code can 'click' it... 
+        $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'next', 'id' => 'next', 'value' => get_string('next')));
         $output .= html_writer::end_tag('div');
 
         // Some hidden fields to trach what is going on.
@@ -470,10 +470,12 @@ class mod_quiz_renderer extends plugin_renderer_base {
     /**
      * Output the JavaScript required to initialise the countdown timer.
      * @param int $timerstartvalue time remaining, in seconds.
+     * @param int $questiontimeout question timeout, in seconds.
      */
-    public function initialise_timer($timerstartvalue) {
+    public function initialise_timer($timerstartvalue, $questiontimeout) {
+    	//$questiontimeout = 10;
         $this->page->requires->js_init_call('M.mod_quiz.timer.init',
-                array($timerstartvalue), false, quiz_get_js_module());
+                array($timerstartvalue, $questiontimeout), false, quiz_get_js_module());
     }
 
     /**
