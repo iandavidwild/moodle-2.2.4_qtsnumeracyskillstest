@@ -117,5 +117,7 @@ if ($attemptobj->is_last_page($page)) {
     $nextpage = $page + 1;
 }
 
-$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $output);
+$questiontimeout = $attemptobj->get_quizobj()->get_quiz()->questiontimelimit;
+
+$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $questiontimeout, $output);
 echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);
