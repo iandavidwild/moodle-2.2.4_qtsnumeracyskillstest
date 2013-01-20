@@ -118,8 +118,11 @@ class filter_mediaplugin extends moodle_text_filter {
 
         // Flash stuff
 
-        if (!empty($CFG->filter_mediaplugin_enable_mp3)) {
-            $search = '/<a\s[^>]*href="([^"#\?]+\.mp3)"[^>]*>([^>]*)<\/a>/is';
+       if (!empty($CFG->filter_mediaplugin_enable_mp3)) {
+        	// IDW 02/07/12 - we are now passing parameters on the end of the audio link so search string needs to be changed
+        	//$search = '/<a\s[^>]*href="([^"#\?]+\.mp3)"[^>]*>([^>]*)<\/a>/is';
+        	$search = '/<a\s[^>]*href="([^"#\?]+\.mp3.*)"[^>]*>([^>]*)<\/a>/is';
+            debugging('filter_mediaplugin_mp3_callback', DEBUG_DEVELOPER);
             $newtext = preg_replace_callback($search, 'filter_mediaplugin_mp3_callback', $newtext);
         }
 
@@ -453,7 +456,9 @@ OET;
  */
 function filter_mediaplugin_mp3_callback($link) {
     static $count = 0;
-
+ 
+    debugging('filter_mediaplugin_mp3_callback', DEBUG_DEVELOPER);
+    
     if (filter_mediaplugin_ignore($link[0])) {
         return $link[0];
     }
@@ -464,6 +469,42 @@ function filter_mediaplugin_mp3_callback($link) {
     $url = $link[1];
     $rawurl = str_replace('&amp;', '&', $url);
 
+    debugging('filter_mediaplugin_mp3_callback $rawurl='.$rawurl, DEBUG_DEVELOPER);
+
+    // IDW 02/07/12 What are autoplay and autorepeat parameters?
+    
+    // IDW 29/09/12 Because most of the audio questions have been created 'autoplay' and 'hidecontrols' default to true...
+    
+    $autoplay = true;
+    $autoplay_pos = strpos($rawurl, '&autoplay=');
+    
+    if($autoplay_pos !== FALSE) {  
+    	debugging('filter_mediaplugin_mp3_callback $autoplay_pos='.$autoplay_pos, DEBUG_DEVELOPER);
+    	$parse_pos = $autoplay_pos + 10;
+    	$autoplay_setting = substr($rawurl, $parse_pos, 4);
+    	if(strcmp($autoplay_setting, 'true') == 0) {
+    		debugging('filter_mediaplugin_mp3_callback Setting $autoplay to true', DEBUG_DEVELOPER);
+    		
+    		$autoplay = true;
+    	}
+    }
+    
+    debugging('filter_mediaplugin_mp3_callback $autoplay_pos=',$autoplay_pos,'$autoplay='.$autoplay, DEBUG_DEVELOPER);
+    
+    $hidecontrols = true;
+    $hidecontrols_pos = strpos($rawurl, '&hidecontrols=');
+    
+    if($hidecontrols_pos !== FALSE) {
+    	debugging('filter_mediaplugin_mp3_callback $hidecontrols_pos='.$hidecontrols_pos, DEBUG_DEVELOPER);
+    	$parse_pos = $hidecontrols_pos + 14;
+    	$hidecontrols_setting = substr($rawurl, $parse_pos, 4);
+    	if(strcmp($hidecontrols_setting, 'true') == 0) {
+    		debugging('filter_mediaplugin_mp3_callback Setting $hidecontrols to true', DEBUG_DEVELOPER);
+    
+    		$hidecontrols = true;
+    	}
+    }
+    
     $info = trim($link[2]);
     if (empty($info) or strpos($info, 'http') === 0) {
         $info = get_string('mp3audio', 'filter_mediaplugin');
@@ -475,68 +516,17 @@ function filter_mediaplugin_mp3_callback($link) {
     //      audio players are supposed to be inline elements
 
     $output = html_writer::tag('span', $printlink, array('id'=>$id, 'class'=>'mediaplugin mediaplugin_mp3'));
-    $output .= html_writer::script(js_writer::function_call('M.util.add_audio_player', array($id, $rawurl, true))); // we can not use standard JS init because this may be cached
-
+    
+    // IDW 02/07/12 We need to specify the file url without the parameters
+    $fileurl = $rawurl;
+    if($autoplay_pos !== FALSE) {
+	    $fileurl = substr($rawurl, 0, $autoplay_pos);
+	    }
+    debugging('filter_mediaplugin_mp3_callback $fileurl='.$fileurl, DEBUG_DEVELOPER);
+    
+    $output .= html_writer::script(js_writer::function_call('M.util.add_audio_player', array($id, $fileurl, true, $autoplay, $hidecontrols))); // we can not use standard JS init because this may be cached
+    
     return $output;
-}
-
-/**
- * Replace swf links with embedded flash objects.
- *
- * Please note this is not a secure and is recommended to be disabled on production systems.
- *
- * @deprecated
- * @param  $link
- * @return string
- */
-function filter_mediaplugin_swf_callback($link) {
-
-    if (filter_mediaplugin_ignore($link[0])) {
-        return $link[0];
-    }
-
-    $width  = empty($link[3]) ? FILTER_MEDIAPLUGIN_VIDEO_WIDTH  : $link[3];
-    $height = empty($link[4]) ? FILTER_MEDIAPLUGIN_VIDEO_HEIGHT : $link[4];
-
-    $url = $link[1];
-    $rawurl = str_replace('&amp;', '&', $url);
-
-    $info = trim($link[5]);
-    if (empty($info) or strpos($info, 'http') === 0) {
-        $info = get_string('flashanimation', 'filter_mediaplugin');
-
-    }
-    $printlink = html_writer::link($rawurl, $info, array('class'=>'mediafallbacklink'));
-
-    $output = <<<OET
-<span class="mediaplugin mediaplugin_swf">
-  <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="$width" height="$height">
-    <param name="movie" value="$url" />
-    <param name="autoplay" value="true" />
-    <param name="loop" value="true" />
-    <param name="controller" value="true" />
-    <param name="scale" value="aspect" />
-    <param name="base" value="." />
-    <param name="allowscriptaccess" value="never" />
-<!--[if !IE]>-->
-    <object type="application/x-shockwave-flash" data="$url" width="$width" height="$height">
-      <param name="controller" value="true" />
-      <param name="autoplay" value="true" />
-      <param name="loop" value="true" />
-      <param name="scale" value="aspect" />
-      <param name="base" value="." />
-      <param name="allowscriptaccess" value="never" />
-<!--<![endif]-->
-$printlink
-<!--[if !IE]>-->
-    </object>
-<!--<![endif]-->
-  </object>
-</span>
-OET;
-
-    return $output;
-
 }
 
 /**
@@ -911,4 +901,3 @@ $printlink <br />
 </object></span>
 OET;
 }
-
