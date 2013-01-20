@@ -49,11 +49,16 @@ $quizsettings = new admin_settingpage('modsettingquiz', $pagetitle, 'moodle/site
 
 // Introductory explanation that all the settings are defaults for the add quiz form.
 $quizsettings->add(new admin_setting_heading('quizintro', '', get_string('configintro', 'quiz')));
-
-// Time limit
+        
+// Quiz time limit
 $quizsettings->add(new admin_setting_configtext_with_advanced('quiz/timelimit',
         get_string('timelimitsec', 'quiz'), get_string('configtimelimitsec', 'quiz'),
         array('value' => '0', 'fix' => false), PARAM_INT));
+
+// Question time limit
+$quizsettings->add(new admin_setting_configtext_with_advanced('quiz/questiontimelimit',
+get_string('questiontimelimitsec', 'quiz'), get_string('configquestiontimelimitsec', 'quiz'),
+array('value' => '0', 'fix' => false), PARAM_INT));
 
 // Number of attempts
 $options = array(get_string('unlimited'));
