@@ -43,6 +43,7 @@ $thispage = optional_param('thispage', 0, PARAM_INT);
 $nextpage = optional_param('nextpage', 0, PARAM_INT);
 $finishattempt = optional_param('finishattempt', 0, PARAM_BOOL);
 $timeup = optional_param('timeup', 0, PARAM_BOOL); // True if form was submitted by timer.
+$timenext = optional_param('timenext', 0, PARAM_INT); // IDW 20_01_2013 Time at which 'next' button was pressed.
 $scrollpos = optional_param('scrollpos', '', PARAM_RAW);
 
 $transaction = $DB->start_delegated_transaction();
@@ -60,6 +61,10 @@ if ($page == -1) {
     $nexturl = $attemptobj->attempt_url(null, $page);
     if ($scrollpos !== '') {
         $nexturl->param('scrollpos', $scrollpos);
+    }
+    // IDW 20_01_2013 Time at which 'next' button was pressed needs to be passed along the chain.
+    if ($timenext !== 0) {
+    	$nexturl->param('timenext', $timenext);
     }
 }
 
