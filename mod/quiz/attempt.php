@@ -41,6 +41,9 @@ if ($id = optional_param('id', 0, PARAM_INTEGER)) {
 $attemptid = required_param('attempt', PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
 
+// IDW 20_01_2013 When was the 'next' button pressed?
+$timenext = optional_param('timenext', 0, PARAM_INT); // When was the 'next' button pressed?
+
 $attemptobj = quiz_attempt::create($attemptid);
 $PAGE->set_url($attemptobj->attempt_url(null, $page));
 
@@ -119,5 +122,9 @@ if ($attemptobj->is_last_page($page)) {
 
 $questiontimeout = $attemptobj->get_quizobj()->get_quiz()->questiontimelimit;
 
-$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $questiontimeout, $output);
+$timenow = time();
+
+echo '$timenow: '.$timenow.' $timenext: '.$timenext.'<br/>';
+
+$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $questiontimeout, $timenext, $output);
 echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);
