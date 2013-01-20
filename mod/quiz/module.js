@@ -132,6 +132,8 @@ M.mod_quiz.timer = {
         		//alert("skip to next question");
 	        	var btn = document.getElementById('next');
 	        	if(btn != null) {
+	                var input = Y.one('input[name=timenext]');
+	                input.set('value', new Date().getTime());
 	        		btn.click();
 	        	}
 	        }
