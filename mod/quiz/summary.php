@@ -89,6 +89,7 @@ $PAGE->set_heading($attemptobj->get_course()->fullname);
 $accessmanager->setup_attempt_page($PAGE);
 
 // Display the page.
+$questiontimeout = $attemptobj->get_quizobj()->get_quiz()->questiontimelimit;
 
-$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $output);
+$accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $questiontimeout, $output);
 echo $output->summary_page($attemptobj, $displayoptions);
