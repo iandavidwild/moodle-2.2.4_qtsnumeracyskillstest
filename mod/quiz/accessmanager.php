@@ -418,7 +418,8 @@ class quiz_access_manager {
 	       	// IDW 20_01_2013 What is the time difference between now and when the 'next' button was pressed? 
         	$load_delay = $timenow - $timenext;
 
-		echo '$timenow: '.$timenow.' $timenext: '.$timenext.' $load_delay: '.$load_delay.'<br/>';
+		// IDW 23_06_2013 remove debugging 
+		// echo '$timenow: '.$timenow.' $timenext: '.$timenext.' $load_delay: '.$load_delay.'<br/>';
         	
 	       	$timeleft += $load_delay;
 	    }
