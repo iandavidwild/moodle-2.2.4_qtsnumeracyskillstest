@@ -124,7 +124,8 @@ $questiontimeout = $attemptobj->get_quizobj()->get_quiz()->questiontimelimit;
 
 $timenow = time();
 
-echo '$timenow: '.$timenow.' $timenext: '.$timenext.'<br/>';
+// IDW 23_06_2013 remove debugging
+// echo '$timenow: '.$timenow.' $timenext: '.$timenext.'<br/>';
 
 $accessmanager->show_attempt_timer_if_needed($attemptobj->get_attempt(), time(), $questiontimeout, $timenext, $output);
 echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);
